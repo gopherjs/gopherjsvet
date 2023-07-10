@@ -3,13 +3,12 @@ package directjsobject_test
 import (
 	"testing"
 
-	_ "github.com/gopherjs/gopherjs/js"
 	"golang.org/x/tools/go/analysis/analysistest"
-	"golang.org/x/tools/go/analysis/passes/assign"
+
+	"github.com/gopherjs/gopherjsvet/analysis/passes/directjsobject"
 )
 
 func Test(t *testing.T) {
 	testdata := analysistest.TestData()
-	tests := []string{"directjsobject"}
-	analysistest.Run(t, testdata, assign.Analyzer, tests...)
+	analysistest.RunWithSuggestedFixes(t, testdata, directjsobject.Analyzer, "directjsobject")
 }
