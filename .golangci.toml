@@ -1,0 +1,15 @@
+[run]
+timeout = "1m"
+
+[output]
+format = "colored-line-number"
+
+[linters]
+disable-all = true
+enable = [
+    "gofumpt",
+    "govet",
+]
+
+[issues]
+exclude-use-default = false
