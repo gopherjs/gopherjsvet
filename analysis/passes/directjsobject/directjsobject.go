@@ -1,7 +1,10 @@
 package directjsobject
 
 import (
+	"bytes"
+	"fmt"
 	"go/ast"
+	"go/printer"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -27,7 +30,15 @@ func run(pass *analysis.Pass) (interface{}, error) {
 }
 
 func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
+	if node == nil {
+		return
+	}
 	switch t := node.(type) {
+	case *ast.ArrayType:
+		expr, ok := t.Elt.(*ast.SelectorExpr)
+		if ok {
+			objMustBeEmbedded(pass, node, expr)
+		}
 	case *ast.StructType:
 		for _, f := range t.Fields.List {
 			switch ft := f.Type.(type) {
@@ -50,24 +61,15 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		switch et := t.Type.(type) {
 		case *ast.SelectorExpr:
 			expr = et
-		case *ast.ArrayType:
-		outer:
-			for {
-				switch at := et.Elt.(type) {
-				case *ast.SelectorExpr:
-					expr = at
-					break outer
-				case *ast.ArrayType:
-					et = at
-				default:
-					return
-				}
-			}
 		default:
 			return
 		}
 		objMustBeEmbedded(pass, node, expr)
 		return
+	default:
+		buf := &bytes.Buffer{}
+		printer.Fprint(buf, pass.Fset, node)
+		fmt.Printf("%T: %s\n", node, buf.String())
 	}
 }
 
