@@ -1,7 +1,6 @@
 package directjsobject
 
 import (
-	"fmt"
 	"go/ast"
 
 	"golang.org/x/tools/go/analysis"
@@ -35,11 +34,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				return true
 			}
 			pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
-		case *ast.SelectorExpr:
-			fmt.Printf("XXX: %v\n", t.X)
-		default:
-			fmt.Printf("%v %T\n", node, node)
-
 		}
 		return true
 	}
