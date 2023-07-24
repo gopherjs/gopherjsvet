@@ -17,33 +17,72 @@ var Analyzer = &analysis.Analyzer{
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
-		switch t := node.(type) {
-		case *ast.CompositeLit:
-			expr, ok := t.Type.(*ast.SelectorExpr)
-			if !ok {
-				return true
-			}
-			if expr.Sel.Name != "Object" {
-				return true
-			}
-			obj := pass.TypesInfo.ObjectOf(expr.Sel)
-			if obj == nil {
-				return true
-			}
-			pkg := obj.Pkg()
-			if pkg == nil {
-				return true
-			}
-			if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
-				return true
-			}
-
-			pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
-		}
+		detectRawJSObject(pass, node)
 		return true
 	}
 	for _, f := range pass.Files {
 		ast.Inspect(f, inspect)
 	}
 	return nil, nil
+}
+
+func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
+	if node == nil {
+		return
+	}
+	switch t := node.(type) {
+	case *ast.ArrayType:
+		expr, ok := t.Elt.(*ast.SelectorExpr)
+		if ok {
+			objMustBeEmbedded(pass, node, expr)
+		}
+	case *ast.Field:
+		switch ft := t.Type.(type) {
+		case *ast.SelectorExpr:
+			objMustBeEmbedded(pass, node, ft)
+		}
+	case *ast.MapType:
+		if valExpr, ok := t.Value.(*ast.SelectorExpr); ok {
+			objMustBeEmbedded(pass, node, valExpr)
+		}
+		keyExpr, ok := t.Key.(*ast.SelectorExpr)
+		if !ok {
+			return
+		}
+		objMustBeEmbedded(pass, node, keyExpr)
+		return
+	case *ast.CompositeLit:
+		var expr *ast.SelectorExpr
+		switch et := t.Type.(type) {
+		case *ast.SelectorExpr:
+			expr = et
+		default:
+			return
+		}
+		objMustBeEmbedded(pass, node, expr)
+		return
+	default:
+		// buf := &bytes.Buffer{}
+		// printer.Fprint(buf, pass.Fset, node)
+		// fmt.Printf("%T: %s\n", node, buf.String())
+	}
+}
+
+func objMustBeEmbedded(pass *analysis.Pass, node ast.Node, expr *ast.SelectorExpr) {
+	if expr.Sel.Name != "Object" {
+		return
+	}
+	obj := pass.TypesInfo.ObjectOf(expr.Sel)
+	if obj == nil {
+		return
+	}
+	pkg := obj.Pkg()
+	if pkg == nil {
+		return
+	}
+	if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
+		return
+	}
+
+	pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
 }
