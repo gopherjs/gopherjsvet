@@ -19,9 +19,16 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
 		switch t := node.(type) {
 		case *ast.CompositeLit:
-			expr, ok := t.Type.(*ast.SelectorExpr)
-			if !ok {
-				return true
+			var expr *ast.SelectorExpr
+			switch et := t.Type.(type) {
+			case *ast.SelectorExpr:
+				expr = et
+			case *ast.ArrayType:
+				var ok bool
+				expr, ok = et.Elt.(*ast.SelectorExpr)
+				if !ok {
+					return true
+				}
 			}
 			if expr.Sel.Name != "Object" {
 				return true
