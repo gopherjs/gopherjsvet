@@ -19,6 +19,22 @@ var Analyzer = &analysis.Analyzer{
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
 		switch t := node.(type) {
+		case *ast.CompositeLit:
+			sel, ok := t.Type.(*ast.SelectorExpr)
+			if !ok {
+				return true
+			}
+			if sel.Sel.Name != "Object" {
+				return true
+			}
+			x, ok := sel.X.(*ast.Ident)
+			if !ok {
+				return true
+			}
+			if x.Name != "js" {
+				return true
+			}
+			pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
 		case *ast.SelectorExpr:
 			fmt.Printf("XXX: %v\n", t.X)
 		default:
