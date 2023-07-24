@@ -10,5 +10,5 @@ import (
 
 func Test(t *testing.T) {
 	testdata := analysistest.TestData()
-	analysistest.RunWithSuggestedFixes(t, testdata, directjsobject.Analyzer, "directjsobject", "otherjsimport")
+	analysistest.RunWithSuggestedFixes(t, testdata, directjsobject.Analyzer, "directjsobject", "otherjsimport", "renamedimport")
 }
