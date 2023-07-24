@@ -1,10 +1,8 @@
 package directjsobject
 
 import (
-	"fmt"
 	"go/ast"
 
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 )
@@ -28,10 +26,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			if expr.Sel.Name != "Object" {
 				return true
 			}
-			ident, ok := expr.X.(*ast.Ident)
-			if !ok {
-				return true
-			}
 			obj := pass.TypesInfo.ObjectOf(expr.Sel)
 			if obj == nil {
 				return true
@@ -40,8 +34,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			if pkg == nil {
 				return true
 			}
-			spew.Dump(ident.Name, pkg.Name())
-			fmt.Println(pkg.Path())
 			if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
 				return true
 			}
