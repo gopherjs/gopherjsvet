@@ -17,47 +17,51 @@ var Analyzer = &analysis.Analyzer{
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
-		switch t := node.(type) {
-		case *ast.MapType:
-			if valExpr, ok := t.Value.(*ast.SelectorExpr); ok {
-				objMustBeEmbedded(pass, node, valExpr)
-			}
-			keyExpr, ok := t.Key.(*ast.SelectorExpr)
-			if !ok {
-				return true
-			}
-			objMustBeEmbedded(pass, node, keyExpr)
-			return true
-		case *ast.CompositeLit:
-			var expr *ast.SelectorExpr
-			switch et := t.Type.(type) {
-			case *ast.SelectorExpr:
-				expr = et
-			case *ast.ArrayType:
-				switch at := et.Elt.(type) {
-				case *ast.SelectorExpr:
-					expr = at
-				case *ast.ArrayType:
-					var ok bool
-					expr, ok = at.Elt.(*ast.SelectorExpr)
-					if !ok {
-						return true
-					}
-				default:
-					return true
-				}
-			default:
-				return true
-			}
-			objMustBeEmbedded(pass, node, expr)
-			return true
-		}
+		detectRawJSObject(pass, node)
 		return true
 	}
 	for _, f := range pass.Files {
 		ast.Inspect(f, inspect)
 	}
 	return nil, nil
+}
+
+func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
+	switch t := node.(type) {
+	case *ast.MapType:
+		if valExpr, ok := t.Value.(*ast.SelectorExpr); ok {
+			objMustBeEmbedded(pass, node, valExpr)
+		}
+		keyExpr, ok := t.Key.(*ast.SelectorExpr)
+		if !ok {
+			return
+		}
+		objMustBeEmbedded(pass, node, keyExpr)
+		return
+	case *ast.CompositeLit:
+		var expr *ast.SelectorExpr
+		switch et := t.Type.(type) {
+		case *ast.SelectorExpr:
+			expr = et
+		case *ast.ArrayType:
+			switch at := et.Elt.(type) {
+			case *ast.SelectorExpr:
+				expr = at
+			case *ast.ArrayType:
+				var ok bool
+				expr, ok = at.Elt.(*ast.SelectorExpr)
+				if !ok {
+					return
+				}
+			default:
+				return
+			}
+		default:
+			return
+		}
+		objMustBeEmbedded(pass, node, expr)
+		return
+	}
 }
 
 func objMustBeEmbedded(pass *analysis.Pass, node ast.Node, expr *ast.SelectorExpr) {
