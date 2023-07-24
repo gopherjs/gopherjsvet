@@ -19,11 +19,14 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
 		switch t := node.(type) {
 		case *ast.MapType:
-			expr, ok := t.Value.(*ast.SelectorExpr)
+			if valExpr, ok := t.Value.(*ast.SelectorExpr); ok {
+				objMustBeEmbedded(pass, node, valExpr)
+			}
+			keyExpr, ok := t.Key.(*ast.SelectorExpr)
 			if !ok {
 				return true
 			}
-			objMustBeEmbedded(pass, node, expr)
+			objMustBeEmbedded(pass, node, keyExpr)
 			return true
 		case *ast.CompositeLit:
 			var expr *ast.SelectorExpr
