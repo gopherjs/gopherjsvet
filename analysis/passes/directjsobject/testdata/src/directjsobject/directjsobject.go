@@ -22,6 +22,11 @@ var _ struct{ obj js.Object } // want "js.Object must be embedded in a struct"
 
 var _ struct{ js.Object }
 
+var _ struct {
+	sl  []js.Object     // want "js.Object must be embedded in a struct"
+	sl2 [][][]js.Object // want "js.Object must be embedded in a struct"
+}
+
 /*
 [][]js.Object
 []map[string]js.Object
