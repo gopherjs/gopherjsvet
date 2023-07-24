@@ -44,17 +44,17 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		case *ast.SelectorExpr:
 			expr = et
 		case *ast.ArrayType:
-			switch at := et.Elt.(type) {
-			case *ast.SelectorExpr:
-				expr = at
-			case *ast.ArrayType:
-				var ok bool
-				expr, ok = at.Elt.(*ast.SelectorExpr)
-				if !ok {
+		outer:
+			for {
+				switch at := et.Elt.(type) {
+				case *ast.SelectorExpr:
+					expr = at
+					break outer
+				case *ast.ArrayType:
+					et = at
+				default:
 					return
 				}
-			default:
-				return
 			}
 		default:
 			return
