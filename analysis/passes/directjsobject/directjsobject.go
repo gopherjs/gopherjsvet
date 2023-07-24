@@ -18,6 +18,24 @@ var Analyzer = &analysis.Analyzer{
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
 		switch t := node.(type) {
+		case *ast.MapType:
+			expr := t.Value.(*ast.SelectorExpr)
+			if expr.Sel.Name != "Object" {
+				return true
+			}
+			obj := pass.TypesInfo.ObjectOf(expr.Sel)
+			if obj == nil {
+				return true
+			}
+			pkg := obj.Pkg()
+			if pkg == nil {
+				return true
+			}
+			if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
+				return true
+			}
+
+			pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
 		case *ast.CompositeLit:
 			var expr *ast.SelectorExpr
 			switch et := t.Type.(type) {
