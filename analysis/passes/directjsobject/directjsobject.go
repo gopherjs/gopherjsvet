@@ -36,12 +36,10 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		if ok {
 			objMustBeEmbedded(pass, node, expr)
 		}
-	case *ast.StructType:
-		for _, f := range t.Fields.List {
-			switch ft := f.Type.(type) {
-			case *ast.SelectorExpr:
-				objMustBeEmbedded(pass, node, ft)
-			}
+	case *ast.Field:
+		switch ft := t.Type.(type) {
+		case *ast.SelectorExpr:
+			objMustBeEmbedded(pass, node, ft)
 		}
 	case *ast.MapType:
 		if valExpr, ok := t.Value.(*ast.SelectorExpr); ok {

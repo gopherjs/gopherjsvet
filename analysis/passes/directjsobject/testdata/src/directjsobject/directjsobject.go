@@ -18,21 +18,16 @@ var _ = [][]js.Object{} // want "js.Object must be embedded in a struct"
 
 var _ = [][][]js.Object{} // want "js.Object must be embedded in a struct"
 
-var _ struct{ obj js.Object } // want "js.Object must be embedded in a struct"
+var _ = struct{ obj js.Object }{} // want "js.Object must be embedded in a struct"
 
-var _ struct{ js.Object }
+var _ = struct{ js.Object }{}
 
-var _ struct {
-	sl  []js.Object     // want "js.Object must be embedded in a struct"
-	sl2 [][][]js.Object // want "js.Object must be embedded in a struct"
-}
-
-/*
-[][]js.Object
-[]map[string]js.Object
-strict {
-	foo []js.Object
-	bar map[string]js.Object
-	baz []map[int]js.Object
-}
-*/
+var _ = struct {
+	sl  []js.Object       // want "js.Object must be embedded in a struct"
+	sl2 [][][]js.Object   // want "js.Object must be embedded in a struct"
+	m   map[int]js.Object // want "js.Object must be embedded in a struct"
+	st  struct {
+		j  js.Object    // want "js.Object must be embedded in a struct"
+		a5 [5]js.Object // want "js.Object must be embedded in a struct"
+	}
+}{}
