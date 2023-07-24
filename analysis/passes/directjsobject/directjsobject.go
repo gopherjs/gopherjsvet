@@ -34,9 +34,16 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			case *ast.SelectorExpr:
 				expr = et
 			case *ast.ArrayType:
-				var ok bool
-				expr, ok = et.Elt.(*ast.SelectorExpr)
-				if !ok {
+				switch at := et.Elt.(type) {
+				case *ast.SelectorExpr:
+					expr = at
+				case *ast.ArrayType:
+					var ok bool
+					expr, ok = at.Elt.(*ast.SelectorExpr)
+					if !ok {
+						return true
+					}
+				default:
 					return true
 				}
 			default:
