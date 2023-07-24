@@ -20,6 +20,8 @@ var _ = [][][]js.Object{} // want "js.Object must be embedded in a struct"
 
 var _ struct{ obj js.Object } // want "js.Object must be embedded in a struct"
 
+var _ struct{ js.Object }
+
 /*
 [][]js.Object
 []map[string]js.Object
@@ -27,13 +29,5 @@ strict {
 	foo []js.Object
 	bar map[string]js.Object
 	baz []map[int]js.Object
-}
-
-struct {
-	obj js.Object
-}
-
-struct { // valid
-	js.Object
 }
 */
