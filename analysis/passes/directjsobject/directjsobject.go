@@ -1,8 +1,10 @@
 package directjsobject
 
 import (
+	"fmt"
 	"go/ast"
 
+	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 )
@@ -19,20 +21,31 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := func(node ast.Node) bool {
 		switch t := node.(type) {
 		case *ast.CompositeLit:
-			sel, ok := t.Type.(*ast.SelectorExpr)
+			expr, ok := t.Type.(*ast.SelectorExpr)
 			if !ok {
 				return true
 			}
-			if sel.Sel.Name != "Object" {
+			if expr.Sel.Name != "Object" {
 				return true
 			}
-			x, ok := sel.X.(*ast.Ident)
+			ident, ok := expr.X.(*ast.Ident)
 			if !ok {
 				return true
 			}
-			if x.Name != "js" {
+			obj := pass.TypesInfo.ObjectOf(expr.Sel)
+			if obj == nil {
 				return true
 			}
+			pkg := obj.Pkg()
+			if pkg == nil {
+				return true
+			}
+			spew.Dump(ident.Name, pkg.Name())
+			fmt.Println(pkg.Path())
+			if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
+				return true
+			}
+
 			pass.Reportf(node.Pos(), "js.Object must be embedded in a struct")
 		}
 		return true
