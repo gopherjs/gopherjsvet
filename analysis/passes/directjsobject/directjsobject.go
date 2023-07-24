@@ -1,10 +1,7 @@
 package directjsobject
 
 import (
-	"bytes"
-	"fmt"
 	"go/ast"
-	"go/printer"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -67,9 +64,9 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		objMustBeEmbedded(pass, node, expr)
 		return
 	default:
-		buf := &bytes.Buffer{}
-		printer.Fprint(buf, pass.Fset, node)
-		fmt.Printf("%T: %s\n", node, buf.String())
+		// buf := &bytes.Buffer{}
+		// printer.Fprint(buf, pass.Fset, node)
+		// fmt.Printf("%T: %s\n", node, buf.String())
 	}
 }
 
