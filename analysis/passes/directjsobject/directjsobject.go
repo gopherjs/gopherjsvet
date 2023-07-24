@@ -29,6 +29,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				if !ok {
 					return true
 				}
+			default:
+				return true
 			}
 			if expr.Sel.Name != "Object" {
 				return true
