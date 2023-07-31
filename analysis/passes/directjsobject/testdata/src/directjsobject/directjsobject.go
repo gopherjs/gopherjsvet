@@ -49,3 +49,8 @@ var (
 	_ map[js.Object]string  // want "js.Object must be embedded in a struct"
 	_ map[*js.Object]string // want "js.Object must be embedded in a struct"
 )
+
+var (
+	_ chan js.Object  // want "js.Object must be embedded in a struct"
+	_ chan *js.Object // want "js.Object must be embedded in a struct"
+)

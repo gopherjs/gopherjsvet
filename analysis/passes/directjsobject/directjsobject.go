@@ -52,6 +52,10 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 			objMustBeEmbedded(pass, node, keyExpr)
 		}
 		return
+	case *ast.ChanType:
+		if valExpr, ok := derefPointer(t.Value); ok {
+			objMustBeEmbedded(pass, node, valExpr)
+		}
 	case *ast.CompositeLit:
 		var expr *ast.SelectorExpr
 		switch et := t.Type.(type) {
