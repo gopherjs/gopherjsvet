@@ -32,14 +32,8 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 	}
 	switch t := node.(type) {
 	case *ast.ArrayType:
-		switch arrTypeExpr := t.Elt.(type) {
-		case *ast.SelectorExpr:
+		if arrTypeExpr, ok := derefPointer(t.Elt); ok {
 			objMustBeEmbedded(pass, node, arrTypeExpr)
-		case *ast.StarExpr:
-			x, ok := arrTypeExpr.X.(*ast.SelectorExpr)
-			if ok {
-				objMustBeEmbedded(pass, node, x)
-			}
 		}
 	case *ast.Field:
 		switch ft := t.Type.(type) {
@@ -47,23 +41,11 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 			objMustBeEmbedded(pass, node, ft)
 		}
 	case *ast.MapType:
-		switch valExpr := t.Value.(type) {
-		case *ast.SelectorExpr:
+		if valExpr, ok := derefPointer(t.Value); ok {
 			objMustBeEmbedded(pass, node, valExpr)
-		case *ast.StarExpr:
-			x, ok := valExpr.X.(*ast.SelectorExpr)
-			if ok {
-				objMustBeEmbedded(pass, node, x)
-			}
 		}
-		switch keyExpr := t.Key.(type) {
-		case *ast.SelectorExpr:
+		if keyExpr, ok := derefPointer(t.Key); ok {
 			objMustBeEmbedded(pass, node, keyExpr)
-		case *ast.StarExpr:
-			x, ok := keyExpr.X.(*ast.SelectorExpr)
-			if ok {
-				objMustBeEmbedded(pass, node, x)
-			}
 		}
 		return
 	case *ast.CompositeLit:
@@ -81,6 +63,19 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		// printer.Fprint(buf, pass.Fset, node)
 		// fmt.Printf("%T: %s\n", node, buf.String())
 	}
+}
+
+func derefPointer(node ast.Node) (*ast.SelectorExpr, bool) {
+	switch x := node.(type) {
+	case *ast.SelectorExpr:
+		return x, true
+	case *ast.StarExpr:
+		child, ok := x.X.(*ast.SelectorExpr)
+		if ok {
+			return child, true
+		}
+	}
+	return nil, false
 }
 
 func objMustBeEmbedded(pass *analysis.Pass, node ast.Node, expr *ast.SelectorExpr) {
