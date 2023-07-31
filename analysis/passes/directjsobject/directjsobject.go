@@ -56,11 +56,15 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 				objMustBeEmbedded(pass, node, x)
 			}
 		}
-		keyExpr, ok := t.Key.(*ast.SelectorExpr)
-		if !ok {
-			return
+		switch keyExpr := t.Key.(type) {
+		case *ast.SelectorExpr:
+			objMustBeEmbedded(pass, node, keyExpr)
+		case *ast.StarExpr:
+			x, ok := keyExpr.X.(*ast.SelectorExpr)
+			if ok {
+				objMustBeEmbedded(pass, node, x)
+			}
 		}
-		objMustBeEmbedded(pass, node, keyExpr)
 		return
 	case *ast.CompositeLit:
 		var expr *ast.SelectorExpr
