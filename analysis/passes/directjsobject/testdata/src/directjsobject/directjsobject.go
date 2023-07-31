@@ -56,8 +56,10 @@ var (
 	_ chan *js.Object  // want "js.Object must be embedded in a struct"
 	_ chan []js.Object // want "js.Object must be embedded in a struct"
 
-	_ = make(chan js.Object) // want "js.Object must be embedded in a struct"
-	_ = new(js.Object)       // want "js.Object must be embedded in a struct"
-	_ = new(*js.Object)      // want "js.Object must be embedded in a struct"
-	_ = new(**js.Object)     // want "js.Object must be embedded in a struct"
+	_ = make(chan js.Object)           // want "js.Object must be embedded in a struct"
+	_ = new(js.Object)                 // want "js.Object must be embedded in a struct"
+	_ = new(*js.Object)                // want "js.Object must be embedded in a struct"
+	_ = new(**js.Object)               // want "js.Object must be embedded in a struct"
+	_ = make([]js.Object, 0, 10)       // want "js.Object must be embedded in a struct"
+	_ = make(map[string]js.Object, 13) // want "js.Object must be embedded in a struct"
 )
