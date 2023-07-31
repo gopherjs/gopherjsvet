@@ -63,3 +63,26 @@ var (
 	_ = make([]js.Object, 0, 10)       // want "js.Object must be embedded in a struct"
 	_ = make(map[string]js.Object, 13) // want "js.Object must be embedded in a struct"
 )
+
+func x(x js.Object) {} // want "js.Object must be embedded in a struct"
+
+var _ = func(js.Object) {} // want "js.Object must be embedded in a struct"
+
+type _ interface {
+	foo(js.Object) // want "js.Object must be embedded in a struct"
+}
+
+func y() js.Object { // want "js.Object must be embedded in a struct"
+	return js.Object{} // want "js.Object must be embedded in a struct"
+}
+
+func _() {
+	var x interface{}
+	x = js.Object{} // want "js.Object must be embedded in a struct"
+	_ = x
+}
+
+func _() {
+	ch := make(chan interface{})
+	ch <- js.Object{} // want "js.Object must be embedded in a struct"
+}
