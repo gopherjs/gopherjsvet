@@ -40,6 +40,7 @@ var _ = struct {
 var (
 	_ js.Object             // want "js.Object must be embedded in a struct"
 	_ *js.Object            // want "js.Object must be embedded in a struct"
+	_ ******js.Object       // want "js.Object must be embedded in a struct"
 	_ []js.Object           // want "js.Object must be embedded in a struct"
 	_ []*js.Object          // want "js.Object must be embedded in a struct"
 	_ [10]js.Object         // want "js.Object must be embedded in a struct"
@@ -51,6 +52,12 @@ var (
 )
 
 var (
-	_ chan js.Object  // want "js.Object must be embedded in a struct"
-	_ chan *js.Object // want "js.Object must be embedded in a struct"
+	_ chan js.Object   // want "js.Object must be embedded in a struct"
+	_ chan *js.Object  // want "js.Object must be embedded in a struct"
+	_ chan []js.Object // want "js.Object must be embedded in a struct"
+
+	_ = make(chan js.Object) // want "js.Object must be embedded in a struct"
+	_ = new(js.Object)       // want "js.Object must be embedded in a struct"
+	_ = new(*js.Object)      // want "js.Object must be embedded in a struct"
+	_ = new(**js.Object)     // want "js.Object must be embedded in a struct"
 )
