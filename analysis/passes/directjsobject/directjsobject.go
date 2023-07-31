@@ -31,6 +31,10 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		return
 	}
 	switch t := node.(type) {
+	case *ast.ValueSpec:
+		if val, ok := derefPointer(t.Type); ok {
+			objMustBeEmbedded(pass, node, val)
+		}
 	case *ast.ArrayType:
 		if arrTypeExpr, ok := derefPointer(t.Elt); ok {
 			objMustBeEmbedded(pass, node, arrTypeExpr)

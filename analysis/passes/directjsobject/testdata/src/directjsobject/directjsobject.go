@@ -41,3 +41,7 @@ var _ = struct {
 		a5 [5]js.Object // want "js.Object must be embedded in a struct"
 	}
 }{}
+
+var _ js.Object // want "js.Object must be embedded in a struct"
+
+var _ *js.Object // want "js.Object must be embedded in a struct"
