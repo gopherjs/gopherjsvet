@@ -5,6 +5,8 @@ import (
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
+
+	"github.com/gopherjs/gopherjsvet/internal"
 )
 
 var Analyzer = &analysis.Analyzer{
@@ -74,9 +76,7 @@ func detectRawJSObject(pass *analysis.Pass, node ast.Node) {
 		objMustBeEmbedded(pass, node, expr)
 		return
 	default:
-		// buf := &bytes.Buffer{}
-		// printer.Fprint(buf, pass.Fset, node)
-		// fmt.Printf("%T: %s\n", node, buf.String())
+		internal.Dump(pass, node)
 	}
 }
 
@@ -91,18 +91,7 @@ func derefPointer(node ast.Node) (*ast.SelectorExpr, bool) {
 }
 
 func objMustBeEmbedded(pass *analysis.Pass, node ast.Node, expr *ast.SelectorExpr) {
-	if expr.Sel.Name != "Object" {
-		return
-	}
-	obj := pass.TypesInfo.ObjectOf(expr.Sel)
-	if obj == nil {
-		return
-	}
-	pkg := obj.Pkg()
-	if pkg == nil {
-		return
-	}
-	if pkg.Path() != "github.com/gopherjs/gopherjs/js" {
+	if !internal.Is_jsObject(pass, expr) {
 		return
 	}
 
