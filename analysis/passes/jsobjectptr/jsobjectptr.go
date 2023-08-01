@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"go/ast"
 
-	"github.com/gopherjs/gopherjsvet/internal"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
+
+	"github.com/gopherjs/gopherjsvet/internal"
 )
 
 var Analyzer = &analysis.Analyzer{
