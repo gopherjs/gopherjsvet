@@ -26,9 +26,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	}
 
 	inspector.WithStack(nodeFilter, func(node ast.Node, push bool, stack []ast.Node) bool {
-		internal.Dump(pass, node)
-		parent := stack[len(stack)-2]
-		internal.Dump(pass, parent)
 		if !push {
 			return true
 		}
@@ -36,6 +33,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			fmt.Printf("not js.Object [%T]\n", node)
 			return true
 		}
+		parent := stack[len(stack)-2]
 		if _, ok := parent.(*ast.StarExpr); !ok {
 			pass.Reportf(parent.Pos(), "js.Object must always be a pointer")
 		}

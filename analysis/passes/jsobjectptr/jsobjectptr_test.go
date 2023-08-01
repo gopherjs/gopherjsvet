@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	testdata := analysistest.TestData()
-	analysistest.RunWithSuggestedFixes(t, testdata, jsobjectptr.Analyzer, "jsobjectptr")
+	analysistest.RunWithSuggestedFixes(t, testdata, jsobjectptr.Analyzer, "jsobjectptr", "renamedimport", "otherjsimport")
 }
