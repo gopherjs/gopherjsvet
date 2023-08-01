@@ -23,11 +23,19 @@ func Is_jsObject(pass *analysis.Pass, node ast.Node) bool {
 	// For embedded structs, ObjectOf returns an instance of the struct field,
 	// not the type itself. So this does the necessary conversion.
 	if varObj, ok := obj.(*types.Var); ok {
-		named, ok := varObj.Type().(*types.Named)
-		if !ok {
+		switch typ := varObj.Type().(type) {
+		case *types.Named:
+			obj = typ.Obj()
+		case *types.Pointer:
+			named, ok := typ.Elem().(*types.Named)
+			if ok {
+				obj = named.Obj()
+			} else {
+				return false
+			}
+		default:
 			return false
 		}
-		obj = named.Obj()
 	}
 	pkg := obj.Pkg()
 	if pkg == nil {

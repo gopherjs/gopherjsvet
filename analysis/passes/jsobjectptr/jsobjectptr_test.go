@@ -3,8 +3,9 @@ package jsobjectptr_test
 import (
 	"testing"
 
-	"github.com/gopherjs/gopherjsvet/analysis/passes/jsobjectptr"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/gopherjs/gopherjsvet/analysis/passes/jsobjectptr"
 )
 
 func Test(t *testing.T) {

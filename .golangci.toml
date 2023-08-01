@@ -6,10 +6,12 @@ format = "colored-line-number"
 
 [linters]
 disable-all = true
-enable = [
-    "gofumpt",
-    "govet",
-]
+enable = ["gofumpt", "govet", "gci"]
 
 [issues]
 exclude-use-default = false
+
+[linters-settings.gci]
+sections = ["standard", "default", "prefix(github.com/gopherjs)"]
+skip-generated = false
+custom-order = true
