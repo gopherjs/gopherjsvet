@@ -1,7 +1,6 @@
 package embedjsobject
 
 import (
-	"fmt"
 	"go/ast"
 	"reflect"
 	"strconv"
@@ -41,8 +40,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return true
 		}
 		fieldList := findFieldList(stack)
-		fmt.Printf("struct: ")
-		internal.Dump(pass, fieldList)
 		for i, field := range fieldList.List {
 			star, ok := field.Type.(*ast.StarExpr)
 			if !ok {

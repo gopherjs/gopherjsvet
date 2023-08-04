@@ -1,7 +1,6 @@
 package jsobjectptr
 
 import (
-	"fmt"
 	"go/ast"
 
 	"golang.org/x/tools/go/analysis"
@@ -31,7 +30,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return true
 		}
 		if !internal.Is_jsObject(pass, node) {
-			fmt.Printf("not js.Object [%T]\n", node)
 			return true
 		}
 		parent := stack[len(stack)-2]
