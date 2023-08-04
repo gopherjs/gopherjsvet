@@ -21,5 +21,17 @@ var (
 	_ = struct{ js.Object }{}   // want "js.Object must always be a pointer"
 	_ struct{ x js.Object }     // want "js.Object must always be a pointer"
 	_ = struct{ x js.Object }{} // want "js.Object must always be a pointer"
-
+	_ = new(js.Object)
 )
+
+func _(js.Object) {} // want "js.Object must always be a pointer"
+
+func _() js.Object { // want "js.Object must always be a pointer"
+	return js.Object{} // want "js.Object must always be a pointer"
+}
+
+func _() {
+	var x any
+	_, _ = x.(js.Object) // want "js.Object must always be a pointer"
+	_ = x
+}
