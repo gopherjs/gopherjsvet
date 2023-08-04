@@ -41,6 +41,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		}
 		fieldList := findFieldList(stack)
 		for i, field := range fieldList.List {
+			if len(field.Names) > 0 {
+				// Not embedded
+				continue
+			}
 			star, ok := field.Type.(*ast.StarExpr)
 			if !ok {
 				// The jsobjectptr analyzer will complain if this is a

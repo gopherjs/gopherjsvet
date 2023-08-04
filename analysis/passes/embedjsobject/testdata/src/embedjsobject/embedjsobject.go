@@ -18,3 +18,8 @@ type _ struct {
 	*js.Object        // Correct placement
 	Name       string `js:"name"`
 }
+
+type _ struct {
+	Name string     `js:"name"`
+	o    *js.Object // Not embedded, so permitted
+}
