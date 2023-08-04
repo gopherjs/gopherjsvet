@@ -39,6 +39,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		if _, ok := reflect.StructTag(tv).Lookup("js"); !ok {
 			return true
 		}
+		switch field.Type.(type) {
+		case *ast.ArrayType, *ast.MapType, *ast.FuncType, *ast.ChanType, *ast.StructType:
+			pass.Reportf(field.Pos(), "non-scalar types not permitted in structs that embed js.Object")
+		}
 		fieldList := findFieldList(stack)
 		for i, field := range fieldList.List {
 			if len(field.Names) > 0 {
