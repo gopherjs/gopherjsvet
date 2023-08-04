@@ -32,10 +32,13 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		if !internal.Is_jsObject(pass, node) {
 			return true
 		}
-		parent := stack[len(stack)-2]
+		parent, ok := internal.AncestorN(stack, 1)
+		if !ok {
+			return true
+		}
 		switch pt := parent.(type) {
 		case *ast.StarExpr:
-			// Fall through
+			return true
 		case *ast.CallExpr:
 			fun, ok := pt.Fun.(*ast.Ident)
 			if !ok {

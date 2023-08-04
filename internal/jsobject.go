@@ -43,3 +43,13 @@ func Is_jsObject(pass *analysis.Pass, node ast.Node) bool {
 	}
 	return pkg.Path() == "github.com/gopherjs/gopherjs/js"
 }
+
+// AncestorN returns the nth ancestor from stack, and true, or nil and false if
+// it does not exist.
+func AncestorN(stack []ast.Node, n int) (ast.Node, bool) {
+	l := len(stack)
+	if n > l {
+		return nil, false
+	}
+	return stack[l-(n+1)], true
+}
