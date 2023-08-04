@@ -35,7 +35,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		parent := stack[len(stack)-2]
 		switch pt := parent.(type) {
 		case *ast.StarExpr:
-			// Fall through
+			return true
 		case *ast.CallExpr:
 			fun, ok := pt.Fun.(*ast.Ident)
 			if !ok {
