@@ -34,5 +34,9 @@ func _() js.Object { // want "js.Object must always be a pointer"
 func _() {
 	var x any
 	_, _ = x.(js.Object) // want "js.Object must always be a pointer"
-	_ = x
+}
+
+func _() {
+	var x *js.Object
+	_ = *x // TODO: This should fail
 }
