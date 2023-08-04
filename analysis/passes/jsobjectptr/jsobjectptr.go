@@ -33,9 +33,19 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return true
 		}
 		parent := stack[len(stack)-2]
-		if _, ok := parent.(*ast.StarExpr); !ok {
-			pass.Reportf(parent.Pos(), "js.Object must always be a pointer")
+		switch pt := parent.(type) {
+		case *ast.StarExpr:
+			// Fall through
+		case *ast.CallExpr:
+			fun, ok := pt.Fun.(*ast.Ident)
+			if !ok {
+				return true
+			}
+			if fun.Name == "new" {
+				return true
+			}
 		}
+		pass.Reportf(parent.Pos(), "js.Object must always be a pointer")
 		return true
 	})
 	return nil, nil
